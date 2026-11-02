@@ -46,8 +46,9 @@ export default async function Home() {
           <PhotoGrid photos={photos} />
         ) : (
           <p className="max-w-sm border-t border-line pt-4 text-[13px] leading-6 text-muted">
-            {isCloudinaryAdminConfigured
-              ? "No photographs in this folder yet."
+            {isCloudinaryAdminConfigured ||
+            process.env.NODE_ENV !== "development"
+              ? "No photographs yet."
               : "Add your Cloudinary credentials to .env.local to load the archive."}
           </p>
         )}

@@ -37,8 +37,9 @@ Titles are curated in `lib/photo-titles.ts`, keyed by public ID; anything new fa
 ## How it works
 
 - **Cache Components + PPR** — `cacheComponents: true`. Photo data is cached with `'use cache'`, so the index is served as a static shell and new photos can stream in on demand.
+- **Masonry grid** — CSS columns with each frame at its own aspect ratio, so the index reads like a contact sheet and the thumbnail still morphs cleanly into the 16:9 hero.
 - **View transitions** — thumbnail-to-hero morph and a slide on the detail caption only, so the page shell never animates. Reduced motion is respected.
-- **Cloudinary loader** — 4:5 smart-cropped thumbnails, 16:9 smart-cropped hero frames, `f_auto` and `q_auto` for format and quality.
+- **Cloudinary loader** — natural-ratio thumbnails, 16:9 hero frames, `f_auto` and `q_auto` for format and quality.
 - **Revalidation** — call `revalidateTag("photos")` after adding or removing photos.
 
 ## Scripts

@@ -9,16 +9,16 @@ export const cloudName =
   process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim() || "";
 
 const THUMB_PREFIX = "thumb:";
-const FULL_PREFIX = "full:";
+const HERO_PREFIX = "hero:";
 
 /** A 4:5, smart-cropped grid thumbnail. */
 export function thumbSrc(publicId: string) {
   return `${THUMB_PREFIX}${publicId}`;
 }
 
-/** The full frame, width-limited but never cropped. */
-export function fullSrc(publicId: string) {
-  return `${FULL_PREFIX}${publicId}`;
+/** A 16:9, smart-cropped hero frame. */
+export function heroSrc(publicId: string) {
+  return `${HERO_PREFIX}${publicId}`;
 }
 
 export function parseSource(src: string) {
@@ -26,9 +26,9 @@ export function parseSource(src: string) {
     return { mode: "thumb" as const, publicId: src.slice(THUMB_PREFIX.length) };
   }
 
-  if (src.startsWith(FULL_PREFIX)) {
-    return { mode: "full" as const, publicId: src.slice(FULL_PREFIX.length) };
+  if (src.startsWith(HERO_PREFIX)) {
+    return { mode: "hero" as const, publicId: src.slice(HERO_PREFIX.length) };
   }
 
-  return { mode: "full" as const, publicId: src };
+  return { mode: "hero" as const, publicId: src };
 }

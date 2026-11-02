@@ -1,5 +1,3 @@
-import { ViewTransition } from "react";
-
 import { PhotoGrid } from "@/components/photo-grid";
 import { isCloudinaryAdminConfigured } from "@/lib/cloudinary-admin";
 import { getPhotos } from "@/lib/photos";
@@ -19,19 +17,7 @@ export default async function Home() {
     .join(" · ");
 
   return (
-    <ViewTransition
-      enter={{
-        "nav-forward": "nav-forward",
-        "nav-back": "nav-back",
-        default: "none",
-      }}
-      exit={{
-        "nav-forward": "nav-forward",
-        "nav-back": "nav-back",
-        default: "none",
-      }}
-      default="none"
-    >
+    <>
       <section className="pb-12 pt-10 sm:pb-16 sm:pt-16">
         <h1 className="text-[clamp(2.5rem,6vw,4.5rem)] leading-[0.95] tracking-[-0.02em]">
           Photographs
@@ -53,6 +39,6 @@ export default async function Home() {
           </p>
         )}
       </section>
-    </ViewTransition>
+    </>
   );
 }

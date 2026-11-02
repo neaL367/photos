@@ -144,6 +144,12 @@ button {
   animation: none;
 }
 
+/* The page itself swaps instantly; only the marked sections animate. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
 /* Let clicks through while a transition is running. */
 ::view-transition {
   pointer-events: none;

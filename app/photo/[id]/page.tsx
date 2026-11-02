@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 
 import { fullSrc } from "@/lib/cloudinary";
-import { formatDate } from "@/lib/format";
+import { formatTimestamp } from "@/lib/format";
 import { getPhoto, getPhotos } from "@/lib/photos";
 
 export async function generateStaticParams() {
@@ -46,7 +46,7 @@ export default async function PhotoPage({ params }: PageProps<"/photo/[id]">) {
   const index = photos.findIndex((entry) => entry.id === photo.id);
   const previous = index > 0 ? photos[index - 1] : null;
   const next = index < photos.length - 1 ? photos[index + 1] : null;
-  const meta = [photo.location, formatDate(photo.date)]
+  const meta = [photo.location, formatTimestamp(photo.date)]
     .filter(Boolean)
     .join(" · ");
 

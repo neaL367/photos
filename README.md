@@ -32,7 +32,7 @@ Optional Cloudinary context metadata:
 | `location` | Subtitle, shown before the date |
 | `alt` | Accessible description |
 
-Titles are curated in `lib/photo-titles.ts`, keyed by public ID; anything new falls back to its filename. Dates come from the upload time and are shown in full (`14 July 2026`).
+Titles are curated in `lib/photo-titles.ts`, keyed by public ID; anything new falls back to its filename. Dates and times come from the upload timestamp and are shown in full (`14 July 2026 · 15:48`, UTC).
 
 ## How it works
 

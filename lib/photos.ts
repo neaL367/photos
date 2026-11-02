@@ -9,7 +9,8 @@ export type Photo = {
   publicId: string;
   title: string;
   location?: string;
-  year?: number;
+  /** ISO timestamp of the upload, shown as the photograph's date. */
+  date?: string;
   /** Intrinsic dimensions of the source, used to reserve layout space. */
   width: number;
   height: number;

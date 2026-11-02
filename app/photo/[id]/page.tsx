@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 
 import { fullSrc } from "@/lib/cloudinary";
+import { formatDate } from "@/lib/format";
 import { getPhoto, getPhotos } from "@/lib/photos";
 
 export async function generateStaticParams() {
@@ -45,7 +46,9 @@ export default async function PhotoPage({ params }: PageProps<"/photo/[id]">) {
   const index = photos.findIndex((entry) => entry.id === photo.id);
   const previous = index > 0 ? photos[index - 1] : null;
   const next = index < photos.length - 1 ? photos[index + 1] : null;
-  const meta = [photo.location, photo.year].filter(Boolean).join(" · ");
+  const meta = [photo.location, formatDate(photo.date)]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <ViewTransition
@@ -61,17 +64,7 @@ export default async function PhotoPage({ params }: PageProps<"/photo/[id]">) {
       }}
       default="none"
     >
-      <article className="pb-16 sm:pb-20">
-        <div className="pb-4 text-[10px] uppercase tracking-[0.16em] text-muted">
-          <Link
-            href="/"
-            transitionTypes={["nav-back"]}
-            className="outline-none focus-visible:underline focus-visible:underline-offset-4"
-          >
-            ← Index
-          </Link>
-        </div>
-
+      <article className="pb-16 pt-6 sm:pb-20 sm:pt-10">
         <ViewTransition
           name={`photo-${photo.id}`}
           share="morph"

@@ -7,8 +7,8 @@ import { getPhotos } from "@/lib/photos";
 export default async function Home() {
   const photos = await getPhotos();
   const years = photos
-    .map((photo) => photo.year)
-    .filter((year): year is number => typeof year === "number");
+    .map((photo) => (photo.date ? new Date(photo.date).getFullYear() : null))
+    .filter((year): year is number => year !== null && Number.isFinite(year));
   const range =
     years.length > 0 ? `${Math.min(...years)}–${Math.max(...years)}` : null;
   const details = [

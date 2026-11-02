@@ -1,3 +1,4 @@
+import { PHOTO_TITLES } from "./photo-titles";
 import type { Photo } from "./photos";
 
 /**
@@ -78,10 +79,12 @@ function slugify(value: string) {
 }
 
 function titleFor(resource: CloudinaryResource) {
-  const caption = resource.context?.custom?.caption?.trim();
+  const titled =
+    PHOTO_TITLES[resource.public_id]?.trim() ||
+    resource.context?.custom?.caption?.trim();
 
-  if (caption) {
-    return caption;
+  if (titled) {
+    return titled;
   }
 
   const name =
@@ -188,20 +191,13 @@ async function listFolder(): Promise<Photo[]> {
       usedIds.set(baseId, count);
 
       const id = count === 1 ? baseId : `${baseId}-${count}`;
-      const parsedYear = resource.created_at
-        ? new Date(resource.created_at).getFullYear()
-        : undefined;
-      const year =
-        parsedYear !== undefined && Number.isFinite(parsedYear)
-          ? parsedYear
-          : undefined;
 
       return {
         id,
         publicId: resource.public_id,
         title,
         location: resource.context?.custom?.location?.trim() || undefined,
-        year,
+        date: resource.created_at,
         width: Math.round(resource.width as number),
         height: Math.round(resource.height as number),
         alt: resource.context?.custom?.alt?.trim() || title,

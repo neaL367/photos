@@ -28,14 +28,16 @@ Optional Cloudinary context metadata:
 
 | Key | Used for |
 | --- | --- |
-| `caption` | Title |
-| `location` | Subtitle |
+| `caption` | Title when no entry exists in `lib/photo-titles.ts` |
+| `location` | Subtitle, shown before the date |
 | `alt` | Accessible description |
+
+Titles are curated in `lib/photo-titles.ts`, keyed by public ID; anything new falls back to its filename. Dates come from the upload time and are shown in full (`14 July 2026`).
 
 ## How it works
 
-- **Cache Components + PPR** — `cacheComponents: true`. Photo data is cached; the footer timestamp streams through a `<Suspense>` hole over the static shell.
-- **View transitions** — thumbnail-to-hero morph, directional forward/back slides, and a pinned header. Reduced motion is respected.
+- **Cache Components + PPR** — `cacheComponents: true`. Photo data is cached with `'use cache'`, so the index is served as a static shell and new photos can stream in on demand.
+- **View transitions** — thumbnail-to-hero and title morphs, directional forward/back slides, and a pinned header. Reduced motion is respected.
 - **Cloudinary loader** — 4:5 smart-cropped thumbnails, width-limited full frames, `f_auto` and `q_auto` for format and quality.
 - **Revalidation** — call `revalidateTag("photos")` after adding or removing photos.
 

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { GeistSerifRegular } from "geist/font/serif/regular";
 
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 import "./globals.css";
@@ -32,7 +31,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main id="main" className="flex-1">
             {children}
           </main>
-          <SiteFooter />
         </div>
       </body>
     </html>

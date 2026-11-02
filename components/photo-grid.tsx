@@ -3,13 +3,16 @@ import Link from "next/link";
 import { ViewTransition } from "react";
 
 import { thumbSrc } from "@/lib/cloudinary";
+import { formatDate } from "@/lib/format";
 import type { Photo } from "@/lib/photos";
 
 export function PhotoGrid({ photos }: { photos: Photo[] }) {
   return (
     <ul className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-3 lg:gap-x-8 lg:gap-y-14">
       {photos.map((photo, index) => {
-        const meta = [photo.location, photo.year].filter(Boolean).join(" · ");
+        const meta = [photo.location, formatDate(photo.date)]
+          .filter(Boolean)
+          .join(" · ");
 
         return (
           <li key={photo.id}>

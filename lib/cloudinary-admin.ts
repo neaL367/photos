@@ -1,13 +1,16 @@
 import type { Photo } from "./photos";
 
 /**
- * Lists the Cloudinary folder configured through environment variables.
+ * Lists photos from the Cloudinary account configured through environment
+ * variables.
  *
  * Required:
  *   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
- *   CLOUDINARY_FOLDER
  *   CLOUDINARY_API_KEY
  *   CLOUDINARY_API_SECRET
+ *
+ * Optional:
+ *   CLOUDINARY_FOLDER — when omitted, the whole account is listed.
  *
  * The key and secret are server-only and must never use a NEXT_PUBLIC_ prefix.
  */
@@ -17,8 +20,8 @@ const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
 const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
 
 const config =
-  cloud && folder && apiKey && apiSecret
-    ? { cloud, folder, apiKey, apiSecret }
+  cloud && apiKey && apiSecret
+    ? { cloud, folder: folder || null, apiKey, apiSecret }
     : null;
 
 export const isCloudinaryAdminConfigured = config !== null;
@@ -86,11 +89,15 @@ function titleFor(resource: CloudinaryResource) {
     resource.public_id.split("/").pop() ||
     "Untitled";
 
-  return name
-    .replace(/[-_]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .replace(/^\w/, (character) => character.toUpperCase());
+  return (
+    name
+      // Cloudinary appends a random six-character suffix on upload.
+      .replace(/_[a-z0-9]{6}$/, "")
+      .replace(/[-_]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/^\w/, (character) => character.toUpperCase()) || "Untitled"
+  );
 }
 
 async function listFolder(): Promise<Photo[]> {
@@ -98,10 +105,18 @@ async function listFolder(): Promise<Photo[]> {
     return [];
   }
 
-  const { cloud, folder: prefixFolder, apiKey: key, apiSecret: secret } = config;
-  const prefix = prefixFolder.endsWith("/")
-    ? prefixFolder
-    : `${prefixFolder}/`;
+  const {
+    cloud,
+    folder: prefixFolder,
+    apiKey: key,
+    apiSecret: secret,
+  } = config;
+  const prefix = prefixFolder
+    ? prefixFolder.endsWith("/")
+      ? prefixFolder
+      : `${prefixFolder}/`
+    : null;
+  const scope = prefix ? `"${prefix}"` : "the account";
   const authorization = `Basic ${Buffer.from(`${key}:${secret}`).toString(
     "base64",
   )}`;
@@ -112,10 +127,13 @@ async function listFolder(): Promise<Photo[]> {
   try {
     for (let page = 0; page < MAX_PAGES; page += 1) {
       const params = new URLSearchParams({
-        prefix,
         max_results: String(PAGE_SIZE),
         context: "true",
       });
+
+      if (prefix) {
+        params.set("prefix", prefix);
+      }
 
       if (cursor) {
         params.set("next_cursor", cursor);
@@ -131,7 +149,7 @@ async function listFolder(): Promise<Photo[]> {
 
       if (!response.ok) {
         console.warn(
-          `[cloudinary] Could not list "${prefix}" (${response.status} ${response.statusText}).`,
+          `[cloudinary] Could not list ${scope} (${response.status} ${response.statusText}).`,
         );
         return [];
       }
@@ -146,7 +164,7 @@ async function listFolder(): Promise<Photo[]> {
       }
     }
   } catch (error) {
-    console.warn(`[cloudinary] Could not list "${prefix}".`, error);
+    console.warn(`[cloudinary] Could not list ${scope}.`, error);
     return [];
   }
 
@@ -186,9 +204,7 @@ async function listFolder(): Promise<Photo[]> {
         year,
         width: Math.round(resource.width as number),
         height: Math.round(resource.height as number),
-        alt:
-          resource.context?.custom?.alt?.trim() ||
-          `${title}, from the personal archive.`,
+        alt: resource.context?.custom?.alt?.trim() || title,
         color: toneFor(id),
       } satisfies Photo;
     });

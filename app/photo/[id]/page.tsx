@@ -8,6 +8,12 @@ import { heroSrc } from "@/lib/cloudinary";
 import { formatTimestamp } from "@/lib/format";
 import { getPhoto, getPhotos } from "@/lib/photos";
 
+// Every part of this route is URL data (the frame, its title, date and
+// neighbours), and the shared-element morph needs all of it in the same commit
+// as the navigation. Links prefetch the route per link instead of the page
+// splitting behind a Suspense fallback, so the navigation is still instant.
+export const instant = false;
+
 export async function generateStaticParams() {
   const photos = await getPhotos();
 
@@ -54,8 +60,15 @@ export default async function PhotoPage({ params }: PageProps<"/photo/[id]">) {
     <article className="pb-16 pt-6 sm:pb-20 sm:pt-10">
       <ViewTransition name={`photo-${photo.id}`} share="morph" default="none">
         <div
-          className="relative aspect-video overflow-hidden bg-surface"
-          style={{ backgroundColor: photo.color }}
+          className="relative overflow-hidden bg-surface"
+          style={{
+            // Keep the photograph's own frame. Vertical images are capped by
+            // height, with the width following the ratio, so they are never
+            // cropped or stretched into a wide 16:9 box.
+            aspectRatio: `${photo.width} / ${photo.height}`,
+            maxWidth: `calc(70dvh * ${photo.width / photo.height})`,
+            backgroundColor: photo.color,
+          }}
         >
           <Image
             src={heroSrc(photo.publicId)}
@@ -84,13 +97,25 @@ export default async function PhotoPage({ params }: PageProps<"/photo/[id]">) {
       >
         <div>
           <div className="mt-8">
-            <h1 className="max-w-2xl text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.05] tracking-[-0.015em]">
-              {photo.title}
-            </h1>
+            <ViewTransition
+              name={`photo-title-${photo.id}`}
+              share="morph"
+              default="none"
+            >
+              <h1 className="max-w-2xl text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.05] tracking-[-0.015em]">
+                {photo.title}
+              </h1>
+            </ViewTransition>
             {meta ? (
-              <p className="mt-3 text-[11px] uppercase tracking-[0.16em] text-muted">
-                {meta}
-              </p>
+              <ViewTransition
+                name={`photo-meta-${photo.id}`}
+                share="morph"
+                default="none"
+              >
+                <p className="mt-3 text-[11px] uppercase tracking-[0.16em] text-muted">
+                  {meta}
+                </p>
+              </ViewTransition>
             ) : null}
           </div>
 
@@ -102,6 +127,7 @@ export default async function PhotoPage({ params }: PageProps<"/photo/[id]">) {
               {previous ? (
                 <Link
                   href={`/photo/${previous.id}`}
+                  prefetch={true}
                   transitionTypes={["nav-back"]}
                   className="inline-flex max-w-full items-baseline gap-2 outline-none focus-visible:underline focus-visible:underline-offset-4"
                 >
@@ -117,6 +143,7 @@ export default async function PhotoPage({ params }: PageProps<"/photo/[id]">) {
               {next ? (
                 <Link
                   href={`/photo/${next.id}`}
+                  prefetch={true}
                   transitionTypes={["nav-forward"]}
                   className="inline-flex max-w-full items-baseline justify-end gap-2 outline-none focus-visible:underline focus-visible:underline-offset-4"
                 >

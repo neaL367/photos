@@ -27,6 +27,26 @@ export async function getPhotos(): Promise<Photo[]> {
   return fetchPhotosFromCloudinary();
 }
 
+/**
+ * Human-readable summary of the archive for the home heading:
+ * "47 photographs · 2025–2026".
+ */
+export function summarizePhotos(photos: Photo[]): string {
+  const years = photos
+    .map((photo) => (photo.date ? new Date(photo.date).getFullYear() : null))
+    .filter((year): year is number => year !== null && Number.isFinite(year));
+
+  const span =
+    years.length > 0 ? `${Math.min(...years)}–${Math.max(...years)}` : null;
+
+  return [
+    `${photos.length} ${photos.length === 1 ? "photograph" : "photographs"}`,
+    span,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 export async function getPhoto(id: string): Promise<Photo | null> {
   "use cache";
   cacheLife("days");

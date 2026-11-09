@@ -6,9 +6,12 @@ export function SiteHeader() {
       className="flex items-baseline justify-between gap-6 py-6 sm:py-8"
       style={{ viewTransitionName: "site-header" }}
     >
+      {/* The grid restores its own offset (see HomeScrollMemory), so returning
+          from a photograph lands where the visitor left off. */}
       <Link
         href="/"
         transitionTypes={["nav-back"]}
+        scroll={false}
         className="text-[17px] tracking-[-0.01em] outline-none focus-visible:underline focus-visible:underline-offset-4"
       >
         Frames

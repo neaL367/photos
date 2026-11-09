@@ -74,6 +74,7 @@ export function PhotoGrid({ photos }: { photos: Photo[] }) {
               <li key={photo.id}>
                 <Link
                   href={`/photo/${photo.id}`}
+                  prefetch={true}
                   transitionTypes={["nav-forward"]}
                   className="group block outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4 focus-visible:ring-offset-background"
                 >
@@ -103,11 +104,25 @@ export function PhotoGrid({ photos }: { photos: Photo[] }) {
                     </div>
                   </ViewTransition>
 
-                  <p className="mt-3 text-[14px] leading-snug">{photo.title}</p>
-                  {meta ? (
-                    <p className="mt-0.5 text-[11px] tracking-wide text-muted">
-                      {meta}
+                  <ViewTransition
+                    name={`photo-title-${photo.id}`}
+                    share="morph"
+                    default="none"
+                  >
+                    <p className="mt-3 text-[14px] leading-snug">
+                      {photo.title}
                     </p>
+                  </ViewTransition>
+                  {meta ? (
+                    <ViewTransition
+                      name={`photo-meta-${photo.id}`}
+                      share="morph"
+                      default="none"
+                    >
+                      <p className="mt-0.5 text-[11px] tracking-wide text-muted">
+                        {meta}
+                      </p>
+                    </ViewTransition>
                   ) : null}
                 </Link>
               </li>

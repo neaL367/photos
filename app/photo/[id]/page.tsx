@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 
+import { PhotoNav } from "@/components/photo-nav";
+import { PhotoShortcuts } from "@/components/photo-shortcuts";
 import { heroSrc } from "@/lib/cloudinary";
 import { formatTimestamp } from "@/lib/format";
 import { getPhoto, getPhotos } from "@/lib/photos";
@@ -58,6 +59,8 @@ export default async function PhotoPage({ params }: PageProps<"/photo/[id]">) {
 
   return (
     <article className="pb-16 pt-6 sm:pb-20 sm:pt-10">
+      <PhotoShortcuts />
+
       <ViewTransition name={`photo-${photo.id}`} share="morph" default="none">
         <div
           className="relative overflow-hidden bg-surface"
@@ -119,42 +122,7 @@ export default async function PhotoPage({ params }: PageProps<"/photo/[id]">) {
             ) : null}
           </div>
 
-          <nav
-            aria-label="Photographs"
-            className="mt-14 grid grid-cols-2 gap-6 border-t border-line pt-5 text-[13px]"
-          >
-            <div>
-              {previous ? (
-                <Link
-                  href={`/photo/${previous.id}`}
-                  prefetch={true}
-                  transitionTypes={["nav-back"]}
-                  className="inline-flex max-w-full items-baseline gap-2 outline-none focus-visible:underline focus-visible:underline-offset-4"
-                >
-                  <span aria-hidden="true" className="text-muted">
-                    ←
-                  </span>
-                  <span className="truncate">{previous.title}</span>
-                </Link>
-              ) : null}
-            </div>
-
-            <div className="text-right">
-              {next ? (
-                <Link
-                  href={`/photo/${next.id}`}
-                  prefetch={true}
-                  transitionTypes={["nav-forward"]}
-                  className="inline-flex max-w-full items-baseline justify-end gap-2 outline-none focus-visible:underline focus-visible:underline-offset-4"
-                >
-                  <span className="truncate">{next.title}</span>
-                  <span aria-hidden="true" className="text-muted">
-                    →
-                  </span>
-                </Link>
-              ) : null}
-            </div>
-          </nav>
+          <PhotoNav previous={previous} next={next} />
         </div>
       </ViewTransition>
     </article>
